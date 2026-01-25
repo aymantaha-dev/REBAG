@@ -1,4 +1,5 @@
 # 🎨 REBAG – Remove Background AI Generator
+![REBAG Banner](https://github.com/aymantaha3345/GENEXUS-AI/blob/main/src/Banner.jpg?raw=true)
 
 <div align="center">
 
