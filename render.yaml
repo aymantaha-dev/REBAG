@@ -36,10 +36,7 @@ services:
         value: ./model
       - key: U2NET_HOME
         value: ./model
-    disk:
-      name: model-storage
-      mountPath: /opt/render/project/src/ml/model
-      sizeGB: 1
+
 
   - type: redis
     name: rebag-redis
