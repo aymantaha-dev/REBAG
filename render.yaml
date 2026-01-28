@@ -1,31 +1,44 @@
+# Render deployment configuration for REBAG
+# Backend (Node.js), Python ML service, and Redis
+
 services:
+  # Node.js backend service
   - type: web
     name: rebag-backend
     env: node
     region: oregon
     plan: free
+    branch: main
     buildCommand: cd backend && npm install
-    startCommand: cd backend && node server.js
+    startCommand: cd backend && npm start
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
-      - key: ML_SERVICE_URL
-        value: http://rebag-ml-service:5050
-      - key: REDIS_URL
-        value: redis://rebag-redis:6379
       - key: PORT
         value: 3000
+      # Internal service hostname for ML service
+      - key: ML_SERVICE_URL
+        value: http://rebag-ml-service:5050
+      # Redis connection string injected from Redis service
+      - key: REDIS_URL
+        fromService:
+          name: rebag-redis
+          type: redis
+          property: connectionString
       - key: MAX_IMAGE_SIZE
         value: 10485760
       - key: MAX_VIDEO_SIZE
         value: 52428800
 
+  # Python ML microservice
   - type: web
     name: rebag-ml-service
     env: python
     region: oregon
     plan: free
+    branch: main
+    # Install Python deps and download model
     buildCommand: cd ml && pip install -r requirements.txt && sh model/download-model.sh
     startCommand: cd ml && python bg_removal_service.py
     healthCheckPath: /health
@@ -37,6 +50,7 @@ services:
       - key: U2NET_HOME
         value: ./model
 
+  # Redis job queue service
   - type: redis
     name: rebag-redis
     region: oregon
@@ -44,10 +58,10 @@ services:
     ipAllowList: []
     maxmemoryPolicy: allkeys-lru
 
- jobs:
+# Optional scheduled cleanup job (clears old files daily)
+jobs:
   - type: cron
     name: cleanup-old-files
     schedule: "0 3 * * *"
     command: cd backend && node scripts/cleanup.js
     service: rebag-backend
-
