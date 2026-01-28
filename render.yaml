@@ -44,9 +44,10 @@ services:
     ipAllowList: []
     maxmemoryPolicy: allkeys-lru
 
-jobs:
+ jobs:
   - type: cron
     name: cleanup-old-files
     schedule: "0 3 * * *"
-    command: cd backend && node -e 'require("./services/storage").cleanupOldFiles("./uploads", 24*60*60*1000); require("./services/storage").cleanupOldFiles("./temp", 24*60*60*1000);'
+    command: cd backend && node scripts/cleanup.js
     service: rebag-backend
+
