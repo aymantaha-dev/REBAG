@@ -18,10 +18,8 @@ services:
         value: 10485760
       - key: MAX_VIDEO_SIZE
         value: 52428800
-    disk:
-      name: uploads
-      mountPath: /opt/render/project/src/uploads
-      sizeGB: 1
+      - key: UPLOAD_DIR
+        value: /tmp/uploads  # ✅ استخدام مجلد مؤقت للنظام
 
   # خدمة الذكاء الاصطناعي (Python)
   - type: web
@@ -39,12 +37,10 @@ services:
         value: 5050
       - key: MODEL_DIR
         value: ./model
-    disk:
-      name: model-storage
-      mountPath: /opt/render/project/src/ml/model
-      sizeGB: 1
+      - key: U2NET_HOME
+        value: ./model
 
-  # خدمة Redis للطابور
+  # خدمة Redis للطابور (تدعم الخطط المجانية)
   - type: redis
     name: rebag-redis
     plan: free
