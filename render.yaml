@@ -1,0 +1,71 @@
+# REBAG Render Blueprint
+# Deploys both Node.js backend and Python ML service
+
+services:
+  # Node.js Backend
+  - type: web
+    name: rebag-backend
+    env: node
+    region: oregon  # or any preferred region
+    plan: free  # or starter for better performance
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && node server.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ML_SERVICE_URL
+        fromService:
+          name: rebag-ml-service
+          type: web
+          property: host
+        # Render sets the host automatically, we need to construct the full URL
+        # We'll use the service's internal hostname
+      - key: REDIS_URL
+        fromService:
+          name: rebag-redis
+          type: redis
+          property: connectionString
+      - key: PORT
+        value: 3000
+      - key: MAX_IMAGE_SIZE
+        value: 10485760
+      - key: MAX_VIDEO_SIZE
+        value: 52428800
+
+  # Python ML Microservice
+  - type: web
+    name: rebag-ml-service
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: cd ml && pip install -r requirements.txt && bash model/download-model.sh
+    startCommand: cd ml && python bg_removal_service.py
+    healthCheckPath: /health
+    envVars:
+      - key: ML_SERVICE_PORT
+        value: 5050
+      - key: MODEL_DIR
+        value: ./model
+      - key: U2NET_HOME
+        value: ./model
+    disk:
+      name: model-storage
+      mountPath: /opt/render/project/src/ml/model
+      sizeGB: 1
+
+  # Redis for job queue
+  - type: redis
+    name: rebag-redis
+    region: oregon
+    plan: free  # 30MB RAM, enough for development
+    ipAllowList: []
+    maxmemoryPolicy: allkeys-lru
+
+# Scheduled cleanup job (optional)
+jobs:
+  - type: cron
+    name: cleanup-old-files
+    schedule: "0 3 * * *"  # Daily at 3 AM
+    command: cd backend && node -e "require('./services/storage').cleanupOldFiles('./uploads', 24*60*60*1000); require('./services/storage').cleanupOldFiles('./temp', 24*60*60*1000);"
+    service: rebag-backend

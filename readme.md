@@ -1,5 +1,5 @@
 # 🎨 REBAG – Remove Background AI Generator
-![REBAG Banner](https://github.com/aymantaha-dev/REBAG/blob/main/Banner.png?raw=true)
+![REBAG Banner](https://github.com/aymantaha3345/GENEXUS-AI/blob/main/src/Banner.jpg?raw=true)
 
 <div align="center">
 
@@ -369,6 +369,5 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 **REBAG** – Making background removal accessible, private, and local-first.
 
 [Get Started](#-quick-start) • [View Code](backend/) • [Report Issue](https://github.com/yourusername/rebag/issues)
-
 
 </div>

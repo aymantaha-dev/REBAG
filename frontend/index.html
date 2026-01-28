@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REBAG - Remove Background AI Generator</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎨 REBAG</h1>
+            <p class="tagline">Remove Background AI Generator</p>
+            <p class="description">Local-first background removal for images and videos. No GPU required.</p>
+        </header>
+
+        <main>
+            <div class="upload-section">
+                <div class="tabs">
+                    <button class="tab-button active" data-tab="image">Image</button>
+                    <button class="tab-button" data-tab="video">Video</button>
+                </div>
+
+                <div class="tab-content" id="image-tab">
+                    <div class="upload-area" id="image-upload-area">
+                        <input type="file" id="image-input" accept=".jpg,.jpeg,.png,.webp" hidden>
+                        <div class="upload-prompt">
+                            <div class="upload-icon">📷</div>
+                            <h3>Upload an Image</h3>
+                            <p>Drag & drop or click to browse</p>
+                            <p class="format-info">Supports JPG, PNG, WebP (max 10MB)</p>
+                            <button class="browse-button" onclick="document.getElementById('image-input').click()">Browse Files</button>
+                        </div>
+                        <div class="preview-container hidden">
+                            <img id="image-preview" src="" alt="Preview">
+                            <button class="remove-preview" onclick="clearImagePreview()">×</button>
+                        </div>
+                    </div>
+                    <button class="process-button" id="process-image" disabled>Remove Background</button>
+                </div>
+
+                <div class="tab-content hidden" id="video-tab">
+                    <div class="upload-area" id="video-upload-area">
+                        <input type="file" id="video-input" accept=".mp4,.mov,.avi" hidden>
+                        <div class="upload-prompt">
+                            <div class="upload-icon">🎥</div>
+                            <h3>Upload a Video</h3>
+                            <p>Drag & drop or click to browse</p>
+                            <p class="format-info">Supports MP4, MOV, AVI (max 50MB)</p>
+                            <button class="browse-button" onclick="document.getElementById('video-input').click()">Browse Files</button>
+                        </div>
+                        <div class="preview-container hidden">
+                            <video id="video-preview" controls></video>
+                            <button class="remove-preview" onclick="clearVideoPreview()">×</button>
+                        </div>
+                    </div>
+                    <button class="process-button" id="process-video" disabled>Remove Background</button>
+                </div>
+            </div>
+
+            <div class="progress-section hidden">
+                <h3>Processing...</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <p class="progress-text" id="progress-text">Starting...</p>
+                <div class="job-info">
+                    <p>Job ID: <span id="job-id">-</span></p>
+                    <p>Status: <span id="job-status">-</span></p>
+                </div>
+            </div>
+
+            <div class="result-section hidden">
+                <h3>Result</h3>
+                <div class="result-container">
+                    <div class="result-preview">
+                        <img id="result-image" src="" alt="Result" class="hidden">
+                        <video id="result-video" controls class="hidden"></video>
+                    </div>
+                    <div class="result-actions">
+                        <a id="download-link" class="download-button" download>Download Result</a>
+                        <button class="new-button" onclick="resetApp()">Process Another</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <details>
+                    <summary>How it works</summary>
+                    <div class="details-content">
+                        <p>REBAG uses the U²-Net deep learning model to separate foreground from background.</p>
+                        <p><strong>For images:</strong> The model processes the image directly and outputs a transparent PNG.</p>
+                        <p><strong>For videos:</strong> FFmpeg extracts each frame, the model processes each frame individually, then frames are reassembled into a video with transparent background.</p>
+                        <p>All processing happens locally on the server—no data is sent to external services.</p>
+                    </div>
+                </details>
+            </div>
+        </main>
+
+        <footer>
+            <p>REBAG v1.0.0 | Local-first AI Background Removal | MIT License</p>
+            <p class="footer-links">
+                <a href="/api/health" target="_blank">API Health</a> |
+                <a href="/api" target="_blank">API Docs</a> |
+                <a href="https://github.com/yourusername/rebag" target="_blank">GitHub</a>
+            </p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
