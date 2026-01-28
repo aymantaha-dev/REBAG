@@ -1,13 +1,9 @@
-# REBAG Render Blueprint
-# Deploys both Node.js backend and Python ML service
-
 services:
-  # Node.js Backend
   - type: web
     name: rebag-backend
     env: node
-    region: oregon  # or any preferred region
-    plan: free  # or starter for better performance
+    region: oregon
+    plan: free
     buildCommand: cd backend && npm install
     startCommand: cd backend && node server.js
     healthCheckPath: /api/health
@@ -15,17 +11,9 @@ services:
       - key: NODE_ENV
         value: production
       - key: ML_SERVICE_URL
-        fromService:
-          name: rebag-ml-service
-          type: web
-          property: host
-        # Render sets the host automatically, we need to construct the full URL
-        # We'll use the service's internal hostname
+        value: http://rebag-ml-service:5050
       - key: REDIS_URL
-        fromService:
-          name: rebag-redis
-          type: redis
-          property: connectionString
+        value: redis://rebag-redis:6379
       - key: PORT
         value: 3000
       - key: MAX_IMAGE_SIZE
@@ -33,7 +21,6 @@ services:
       - key: MAX_VIDEO_SIZE
         value: 52428800
 
-  # Python ML Microservice
   - type: web
     name: rebag-ml-service
     env: python
@@ -54,18 +41,16 @@ services:
       mountPath: /opt/render/project/src/ml/model
       sizeGB: 1
 
-  # Redis for job queue
   - type: redis
     name: rebag-redis
     region: oregon
-    plan: free  # 30MB RAM, enough for development
+    plan: free
     ipAllowList: []
     maxmemoryPolicy: allkeys-lru
 
-# Scheduled cleanup job (optional)
 jobs:
   - type: cron
     name: cleanup-old-files
-    schedule: "0 3 * * *"  # Daily at 3 AM
+    schedule: "0 3 * * *"
     command: cd backend && node -e "require('./services/storage').cleanupOldFiles('./uploads', 24*60*60*1000); require('./services/storage').cleanupOldFiles('./temp', 24*60*60*1000);"
     service: rebag-backend
