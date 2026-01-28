@@ -164,7 +164,7 @@ sudo apt-get install -y ffmpeg redis-server python3-pip nodejs npm
 ### 1. Clone & Setup
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/rebag.git
+git clone https://github.com/aymantaha-dev/rebag.git
 cd rebag
 
 # Install backend dependencies
@@ -253,7 +253,7 @@ curl http://localhost:3000/api/jobs/job_abc123
 ## ☁️ Deploy on Render
 
 ### One-Click Deployment
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/yourusername/rebag)
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/aymantaha-dev/rebag)
 
 ### Manual Deployment Steps
 1. **Fork** this repository to your GitHub account
@@ -354,13 +354,13 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/rebag/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/rebag/discussions)
+- **Issues**: [GitHub Issues](https://github.com/aymantaha-dev/rebag/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/aymantaha-dev/rebag/discussions)
 - **Email**: support@rebag.dev
 
 ## 🌟 Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=yourusername/rebag&type=Date)](https://star-history.com/#yourusername/rebag&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=aymantaha-dev/rebag&type=Date)](https://star-history.com/#aymantaha-dev/rebag&Date)
 
 ---
 
@@ -368,6 +368,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 **REBAG** – Making background removal accessible, private, and local-first.
 
-[Get Started](#-quick-start) • [View Code](backend/) • [Report Issue](https://github.com/yourusername/rebag/issues)
+[Get Started](#-quick-start) • [View Code](backend/) • [Report Issue](https://github.com/aymantaha-dev/rebag/issues)
 
 </div>
