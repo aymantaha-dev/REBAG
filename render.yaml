@@ -1,45 +1,37 @@
-# Render deployment configuration for REBAG
-# Backend (Node.js), Python ML service, and Redis
-
 services:
-  # Node.js backend service
+  # الخدمة الخلفية (Node.js)
   - type: web
     name: rebag-backend
     env: node
-    region: oregon
     plan: free
-    branch: main
-    buildCommand: cd backend && npm install
-    startCommand: cd backend && npm start
+    buildCommand: cd backend && npm ci
+    startCommand: cd backend && node server.js
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
         value: 3000
-      # Internal service hostname for ML service
       - key: ML_SERVICE_URL
         value: http://rebag-ml-service:5050
-      # Redis connection string injected from Redis service
-      - key: REDIS_URL
-        fromService:
-          name: rebag-redis
-          type: redis
-          property: connectionString
       - key: MAX_IMAGE_SIZE
         value: 10485760
       - key: MAX_VIDEO_SIZE
         value: 52428800
+    disk:
+      name: uploads
+      mountPath: /opt/render/project/src/uploads
+      sizeGB: 1
 
-  # Python ML microservice
+  # خدمة الذكاء الاصطناعي (Python)
   - type: web
     name: rebag-ml-service
     env: python
-    region: oregon
     plan: free
-    branch: main
-    # Install Python deps and download model
-    buildCommand: cd ml && pip install -r requirements.txt && sh model/download-model.sh
+    buildCommand: |
+      cd ml &&
+      pip install -r requirements.txt &&
+      wget -q -O model/u2net.onnx https://github.com/danielgatis/rembg/releases/download/v0.0.0/u2net.onnx
     startCommand: cd ml && python bg_removal_service.py
     healthCheckPath: /health
     envVars:
@@ -47,21 +39,14 @@ services:
         value: 5050
       - key: MODEL_DIR
         value: ./model
-      - key: U2NET_HOME
-        value: ./model
+    disk:
+      name: model-storage
+      mountPath: /opt/render/project/src/ml/model
+      sizeGB: 1
 
-  # Redis job queue service
+  # خدمة Redis للطابور
   - type: redis
     name: rebag-redis
-    region: oregon
     plan: free
-    ipAllowList: []
     maxmemoryPolicy: allkeys-lru
-
-# Optional scheduled cleanup job (clears old files daily)
-jobs:
-  - type: cron
-    name: cleanup-old-files
-    schedule: "0 3 * * *"
-    command: cd backend && node scripts/cleanup.js
-    service: rebag-backend
+    ipAllowList: [] # لا تسمح بالوصول من عناوين IP خارجية
